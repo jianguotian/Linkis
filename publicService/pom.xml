@@ -33,6 +33,12 @@
             <artifactId>netty</artifactId>
             <version>3.6.2.Final</version>
         </dependency>
+        <dependency>
+            <groupId>com.webank.wedatasphere.linkis</groupId>
+            <artifactId>public-module</artifactId>
+            <version>${linkis.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>com.webank.wedatasphere.linkis</groupId>

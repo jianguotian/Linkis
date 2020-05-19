@@ -10,10 +10,10 @@ eureka:
     hostname:
 #    preferIpAddress: true
   client:
-#    register-with-eureka: false
-#    fetch-registry: false
+    register-with-eureka: false
+    fetch-registry: false
     serviceUrl:
-      defaultZone: http://ip:port/eureka/
+      defaultZone: http://localhost:8080/eureka/
 #  server:
 #    enableSelfPreservation: false
     enable-self-preservation: false
