@@ -60,6 +60,11 @@ class SparkSubmitProcessBuilder extends ProcessEngineBuilder with Logging {
   private[this] var _executorCores: Option[String] = None
   private[this] var _queue: Option[String] = None
   private[this] var _numExecutors: Option[String] = None
+  private[this] var _dynamicAllocation: Option[String] = None
+  private[this] var _initialExecutors: Option[String] = None
+  private[this] var _minExecutors: Option[String] = None
+  private[this] var _maxExecutors: Option[String] = None
+  private[this] var _executorIdleTimeout: Option[String] = None
   private[this] var _archives: ArrayBuffer[Path] = ArrayBuffer()
 
   private[this] var _env: ArrayBuffer[(String, String)] = ArrayBuffer()
@@ -143,6 +148,13 @@ class SparkSubmitProcessBuilder extends ProcessEngineBuilder with Logging {
     this.executorCores(DWC_SPARK_EXECUTOR_CORES.getValue(properties))
     this.executorMemory(DWC_SPARK_EXECUTOR_MEMORY.getValue(properties) + "G")
     this.numExecutors(DWC_SPARK_EXECUTOR_INSTANCES.getValue(properties))
+    this.dynamicAllocation(DWC_SPARK_DYNAMIC_ENABLED.getValue(properties))
+    if (DWC_SPARK_DYNAMIC_ENABLED.getValue(properties)) {
+      this.initialExecutors(DWC_SPARK_INITIAL_EXECUTORS.getValue(properties))
+      this.minExecutors(DWC_SPARK_MIN_EXECUTORS.getValue(properties))
+      this.maxExecutors(DWC_SPARK_MAX_EXECUTORS.getValue(properties))
+      this.executorIdleTimeout(DWC_SPARK_EXECUTOR_IDLE_TIMEOUT.getValue(properties))
+    }
     properties.getOrDefault("files", "").split(",").map(RelativePath).foreach(file)
     properties.getOrDefault("jars", "").split(",").map(RelativePath).foreach(jar)
     proxyUser(properties.getOrDefault("proxyUser", ""))
@@ -239,6 +251,51 @@ class SparkSubmitProcessBuilder extends ProcessEngineBuilder with Logging {
     this
   }
 
+  def dynamicAllocation(dynamicAllocation: Boolean): SparkSubmitProcessBuilder = {
+    this.dynamicAllocation(dynamicAllocation.toString)
+  }
+
+  def dynamicAllocation(dynamicAllocation: String): SparkSubmitProcessBuilder = {
+    _dynamicAllocation = Some(dynamicAllocation)
+    this
+  }
+
+  def initialExecutors(initialExecutors: Int): SparkSubmitProcessBuilder = {
+    this.initialExecutors(initialExecutors.toString)
+  }
+
+  def initialExecutors(initialExecutors: String): SparkSubmitProcessBuilder = {
+    _initialExecutors = Some(initialExecutors)
+    this
+  }
+
+  def minExecutors(minExecutors: Int): SparkSubmitProcessBuilder = {
+    this.minExecutors(minExecutors.toString)
+  }
+
+  def minExecutors(minExecutors: String): SparkSubmitProcessBuilder = {
+    _minExecutors = Some(minExecutors)
+    this
+  }
+
+  def maxExecutors(maxExecutors: Int): SparkSubmitProcessBuilder = {
+    this.maxExecutors(maxExecutors.toString)
+  }
+
+  def maxExecutors(maxExecutors: String): SparkSubmitProcessBuilder = {
+    _maxExecutors = Some(maxExecutors)
+    this
+  }
+
+  def executorIdleTimeout(executorIdleTimeout: Int): SparkSubmitProcessBuilder = {
+    this.executorIdleTimeout(executorIdleTimeout.toString)
+  }
+
+  def executorIdleTimeout(executorIdleTimeout: String): SparkSubmitProcessBuilder = {
+    _executorIdleTimeout = Some(executorIdleTimeout)
+    this
+  }
+
   def queue(queue: String): SparkSubmitProcessBuilder = {
     _queue = Some(queue)
     this
@@ -311,6 +368,11 @@ class SparkSubmitProcessBuilder extends ProcessEngineBuilder with Logging {
     addOpt("--executor-memory", _executorMemory)
     addOpt("--executor-cores", _executorCores)
     addOpt("--num-executors", _numExecutors)
+    addOpt("--conf spark.dynamicAllocation.enabled", _dynamicAllocation)
+    addOpt("--conf spark.dynamicAllocation.initialExecutors", _initialExecutors)
+    addOpt("--conf spark.dynamicAllocation.minExecutors", _minExecutors)
+    addOpt("--conf spark.dynamicAllocation.maxExecutors", _maxExecutors)
+    addOpt("--conf spark.dynamicAllocation.executorIdleTimeout", _executorIdleTimeout)
     addOpt("--queue", _queue)
     //    if(!_archives.map(fromPath).equals("")) {
     //      addList("--archives", _archives.map(fromPath))

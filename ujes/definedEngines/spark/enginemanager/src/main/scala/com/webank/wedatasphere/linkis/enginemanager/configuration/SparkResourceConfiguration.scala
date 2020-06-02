@@ -28,5 +28,10 @@ object SparkResourceConfiguration {
   val DWC_SPARK_EXECUTOR_MEMORY = CommonVars[Int]("spark.executor.memory", 4) //单位为G
   val DWC_SPARK_EXECUTOR_CORES = CommonVars[Int]("spark.executor.cores", 2)
   val DWC_SPARK_EXECUTOR_INSTANCES = CommonVars[Int]("spark.executor.instances", 3)
+  val DWC_SPARK_DYNAMIC_ENABLED = CommonVars[Boolean]("wds.linkis.spark.dynamic.enabled", false)
+  val DWC_SPARK_INITIAL_EXECUTORS = CommonVars[Int]("spark.dynamicAllocation.initialExecutors", 0)
+  val DWC_SPARK_MIN_EXECUTORS = CommonVars[Int]("spark.dynamicAllocation.minExecutors", 0)
+  val DWC_SPARK_MAX_EXECUTORS = CommonVars[Int]("spark.dynamicAllocation.maxExecutors", 1)
+  val DWC_SPARK_EXECUTOR_IDLE_TIMEOUT = CommonVars[Int]("spark.dynamicAllocation.executorIdleTimeout", 60) //单位为s
   val DWC_QUEUE_NAME = CommonVars[String]("wds.linkis.yarnqueue", "ide")
 }
