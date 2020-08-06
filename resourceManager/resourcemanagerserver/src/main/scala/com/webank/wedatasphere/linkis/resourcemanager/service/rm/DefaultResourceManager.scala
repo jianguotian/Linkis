@@ -277,6 +277,58 @@ class DefaultResourceManager extends ResourceManager with Logging with Initializ
     }
   }
 
+  override def requestExpectedResource(moduleInstance: ServiceInstance, user:String, ticketId: String, resource: Resource): ResultResource = {
+    info(s"Get expected resource request of user:$user,info:moduleInstance:$moduleInstance,resource:$resource")
+    //1.Determine if there are still events(判断是否还有事件)
+    if (hasModuleInstanceEvent(moduleInstance)) {
+      warn(s"There are still unconsumed event of module: $moduleInstance")
+      return NotEnoughResource(s"There are still unconsumed event of module:$moduleInstance")
+    }
+    if (hasUserEvent(user, moduleInstance.getApplicationName)) {
+      warn(s"There are still unconsumed event of user: $user")
+      return NotEnoughResource(s"There are still unconsumed event of user: $user")
+    }
+    //2.Can I apply?(是否可以申请)
+    val reqService = getRequestResourceService(moduleInstance)
+    try {
+      if (!reqService.canRequest(moduleInstance, user, creator, resource))
+        return NotEnoughResource(s"user：$user not enough resource")
+    } catch {
+      case warn: RMWarnException => return NotEnoughResource(warn.getMessage)
+    }
+
+    val userResourceRecords = userResourceRecordService.getUserResourceRecordByUser(user)
+    //找到ticketId对应的资源使用记录
+    val userResourceRecord = userResourceRecordService.getUserModuleRecord(user, ticketId)
+    //当前expectedResource
+    val userExpectedResource = userResourceRecordService.deserialize(userResourceRecord.getUserExpectedResource)
+    if (userExpectedResource > resource) {
+      //通过申请
+      return AvailableResource(ticketId)
+    }
+
+
+    //3.Lock engine, lock user(锁引擎，锁用户)
+    Utils.tryFinally {
+      resourceLockService.tryLock(null, moduleInstance.getApplicationName, moduleInstance.getInstance)
+      resourceLockService.tryLock(user, moduleInstance.getApplicationName, moduleInstance.getInstance)
+      try {
+        if (!reqService.canRequest(moduleInstance, user, creator, resource))
+          return NotEnoughResource(s"user：$user not enough resource")
+      } catch {
+        case warn: RMWarnException => return NotEnoughResource(warn.getMessage)
+      }
+      userResourceRecord.setEngineApplicationName(usedResource.engineInstance.getApplicationName)
+      userResourceRecord.setEngineInstance(usedResource.engineInstance.getInstance)
+      userResourceRecord.setUserLockedResource(null)
+      userResourceRecord.setUserUsedResource(userResourceRecordService.serialize(usedResource.resource))
+      userResourceRecord.setUsedTime(System.currentTimeMillis())
+      userResourceRecord.setUserExpectedResource(userResourceRecordService.serialize(resource))
+      userResourceRecordService.update(userResourceRecord)
+      AvailableResource(tickedId)
+    }
+  }
+
   /**
     * When the resource is instantiated, the total amount of resources actually occupied is returned.
     * 当资源被实例化后，返回实际占用的资源总量

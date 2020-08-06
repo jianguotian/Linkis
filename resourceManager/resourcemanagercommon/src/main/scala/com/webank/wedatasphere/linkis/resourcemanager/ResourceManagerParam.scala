@@ -26,6 +26,8 @@ import com.webank.wedatasphere.linkis.common.ServiceInstance
   */
 case class RequestResource(moduleInstance: ServiceInstance, user: String, creator: String, resource: Resource)
 
+case class RequestExpectedResource(moduleInstance: ServiceInstance, user: String, ticketId: String, resource: Resource)
+
 case class RequestResourceAndWait(moduleInstance: ServiceInstance, user: String, creator: String, resource: Resource, waitTime: Long)
 
 case class ResourceInited(resource: ResultResource, moduleInstance: ServiceInstance, realUsed: Resource, engineInstance: ServiceInstance = null)
@@ -35,5 +37,7 @@ case class ResourceReleased(resultResource: ResultResource, moduleInstance: Serv
 case class ResourceOverload(moduleInstance: ServiceInstance)
 
 case class ResourceInfo(resourceInfo: Array[ModuleResourceInfo])
+
+case class ResourceUpdated(resource: ResultResource, moduleInstance: ServiceInstance, realUsed: Resource, engineInstance: ServiceInstance = null)
 
 

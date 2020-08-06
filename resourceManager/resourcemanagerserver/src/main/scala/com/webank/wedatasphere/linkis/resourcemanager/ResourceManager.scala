@@ -74,6 +74,15 @@ abstract class ResourceManager {
   def requestResource(moduleInstance: ServiceInstance, user: String, creator: String, resource: Resource, wait: Long): ResultResource
 
   /**
+    * Request resources and wait for a certain amount of time until the requested resource is met
+    * 请求资源，并等待一定的时间，直到满足请求的资源
+    *
+    * @param resource
+    * @return
+    */
+  def requestExpectedResource(moduleInstance: ServiceInstance, ticketId: String, user: String, creator: String, resource: Resource): ResultResource
+
+  /**
     * When the resource is instantiated, the total amount of resources actually occupied is returned.
     * 当资源被实例化后，返回实际占用的资源总量
     *

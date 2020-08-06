@@ -32,6 +32,7 @@ public class UserResourceMetaData {
     private String engineInstance;
     private String userLockedResource;
     private String userUsedResource;
+    private String userExpectedResource;
     private String resourceType;
     private Long lockedTime;
     private Long usedTime;
@@ -145,6 +146,14 @@ public class UserResourceMetaData {
 
     public void setUserUsedResource(String userUsedResource) {
         this.userUsedResource = userUsedResource;
+    }
+
+    public String getUserExpectedResource() {
+        return userExpectedResource;
+    }
+
+    public void setUserExpectedResource(String userExpectedResource) {
+        this.userExpectedResource = userExpectedResource;
     }
 
     public String getResourceType() {

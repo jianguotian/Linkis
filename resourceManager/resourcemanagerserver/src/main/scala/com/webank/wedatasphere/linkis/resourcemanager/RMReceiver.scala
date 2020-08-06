@@ -41,6 +41,7 @@ class RMReceiver extends Receiver with Logging {
     case moduleInstance: ServiceInstance => rm.unregister(moduleInstance)
     case ResourceInited(resource, moduleInstance, realUsed, engineInstance) => rm.resourceInited(resource, moduleInstance, realUsed, SenderUtils.getSenderServiceInstance(sender))
     case ResourceReleased(resultResource, moduleInstance) => rm.resourceReleased(resultResource, moduleInstance)
+    case ResourceUpdated(resource, moduleInstance, realUsed, engineInstance) => rm.resourceUpdated(resource, moduleInstance, realUsed, SenderUtils.getSenderServiceInstance(sender))
   }
 
   override def receiveAndReply(message: Any, sender: Sender): Any = message match {

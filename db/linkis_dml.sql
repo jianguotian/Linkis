@@ -49,6 +49,11 @@ INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `applicatio
 INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.executor.memory', '取值范围：3-15，单位：G', '执行器内存大小', @application_id, '3', 'NumInterval', '[3,15]', '0', '0', '3');
 INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.driver.cores', '取值范围：只能取1，单位：个', '驱动器核心个数', @application_id, '1', 'NumInterval', '[1,1]', '1', '1', '1');
 INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.driver.memory', '取值范围：1-15，单位：G', '驱动器内存大小', @application_id, '2', 'NumInterval', '[1,15]', '0', '0', '1');
+INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'wds.linkis.spark.dynamic.enabled', '是否开启动态资源分配', '是否开启动态资源分配', @application_id, 'false', 'None', NULL, '0', '0', '1');
+INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.dynamicAllocation.initialExecutors', '初始执行器个数', '初始执行器个数', @application_id, '0', 'NumInterval', NULL, '0', '0', '1');
+INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.dynamicAllocation.minExecutors', '单位：个', '最小执行器个数', @application_id, '0', 'NumInterval', NULL, '0', '0', '1');
+INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.dynamicAllocation.maxExecutors', '单位：个', '最大执行器个数', @application_id, '30', 'NumInterval', NULL, '0', '0', '1');
+INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'spark.dynamicAllocation.executorIdleTimeout', '单位：s', '执行器空闲时间', @application_id, '60s', NULL, '[1,15]', '0', '0', '1');
 INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'hive.client.memory', '取值范围：1-10，单位：G', 'hive引擎初始化内存大小', @application_id, '2', 'NumInterval', '[1,10]', '0', '0', '1');
 INSERT INTO `linkis_config_key` (`id`, `key`, `description`, `name`, `application_id`, `default_value`, `validate_type`, `validate_range`, `is_hidden`, `is_advanced`, `level`) VALUES (0, 'hive.client.java.opts', 'hive客户端进程参数', 'hive引擎启动时jvm参数', @application_id, '', 'None', NULL, '1', '1', '1');
 
@@ -128,6 +133,26 @@ SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a
 INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
 
 SELECT @key_id:=id from(SELECT k.id  as 'id'from linkis_config_key k left join linkis_application a on k.application_id = a.id WHERE k.`key` = 'spark.driver.memory' and a.name = 'IDE' ORDER BY k.id limit 1) as tmp;
+SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a on t.application_id = a.id  WHERE t.`name` = 'spark资源设置' and a.name = 'spark' ;
+INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
+
+SELECT @key_id:=id from(SELECT k.id  as 'id'from linkis_config_key k left join linkis_application a on k.application_id = a.id WHERE k.`key` = 'wds.linkis.spark.dynamic.enabled' and a.name = 'IDE' ORDER BY k.id limit 1) as tmp;
+SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a on t.application_id = a.id  WHERE t.`name` = 'spark资源设置' and a.name = 'spark' ;
+INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
+
+SELECT @key_id:=id from(SELECT k.id  as 'id'from linkis_config_key k left join linkis_application a on k.application_id = a.id WHERE k.`key` = 'spark.dynamicAllocation.initialExecutors' and a.name = 'IDE' ORDER BY k.id limit 1) as tmp;
+SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a on t.application_id = a.id  WHERE t.`name` = 'spark资源设置' and a.name = 'spark' ;
+INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
+
+SELECT @key_id:=id from(SELECT k.id  as 'id'from linkis_config_key k left join linkis_application a on k.application_id = a.id WHERE k.`key` = 'spark.dynamicAllocation.minExecutors' and a.name = 'IDE' ORDER BY k.id limit 1) as tmp;
+SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a on t.application_id = a.id  WHERE t.`name` = 'spark资源设置' and a.name = 'spark' ;
+INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
+
+SELECT @key_id:=id from(SELECT k.id  as 'id'from linkis_config_key k left join linkis_application a on k.application_id = a.id WHERE k.`key` = 'spark.dynamicAllocation.maxExecutors' and a.name = 'IDE' ORDER BY k.id limit 1) as tmp;
+SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a on t.application_id = a.id  WHERE t.`name` = 'spark资源设置' and a.name = 'spark' ;
+INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
+
+SELECT @key_id:=id from(SELECT k.id  as 'id'from linkis_config_key k left join linkis_application a on k.application_id = a.id WHERE k.`key` = 'spark.dynamicAllocation.executorIdleTimeout' and a.name = 'IDE' ORDER BY k.id limit 1) as tmp;
 SELECT @tree_id := t.id from linkis_config_tree t left join linkis_application a on t.application_id = a.id  WHERE t.`name` = 'spark资源设置' and a.name = 'spark' ;
 INSERT INTO `linkis_config_key_tree` (`id`, `key_id`, `tree_id`) VALUES (0, @key_id, @tree_id);
 

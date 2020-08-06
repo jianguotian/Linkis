@@ -35,6 +35,8 @@ CREATE TABLE `linkis_user_resource_meta_data` (
   `engine_instance` varchar(500) COLLATE utf8_bin DEFAULT NULL,
   `user_locked_resource` varchar(5000) COLLATE utf8_bin DEFAULT NULL,
   `user_used_resource` varchar(5000) COLLATE utf8_bin DEFAULT NULL,
+  `user_expected_resource` varchar(5000) COLLATE utf8_bin DEFAULT NULL,
+  `user_max_resource` varchar(5000) COLLATE utf8_bin DEFAULT NULL,
   `resource_type` varchar(500) COLLATE utf8_bin DEFAULT NULL,
   `locked_time` bigint(20) DEFAULT NULL,
   `used_time` bigint(20) DEFAULT NULL,

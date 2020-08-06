@@ -75,7 +75,10 @@ class SparkEngineExecutor(val sc: SparkContext, id: Long, outputPrintLimit: Int,
     Utils.tryCatch({
       //      val driverHost: String = sc.getConf.get("spark.driver.host")
       //      val executorMemList = sc.getExecutorMemoryStatus.filter(x => !x._1.split(":")(0).equals(driverHost)).map(x => x._2._1)
-      val executorNum: Int = sc.getConf.get("spark.executor.instances").toInt
+      var executorNum: Int = sc.getConf.get("spark.executor.instances").toInt
+      if (sc.getConf.get("spark.dynamicAllocation.enabled").toBoolean) {
+        executorNum = sc.getConf.get("spark.dynamicAllocation.initialExecutors").toInt
+      }
       val executorMem: Long = ByteTimeUtils.byteStringAsBytes(sc.getConf.get("spark.executor.memory")) * executorNum
 
       //      if(executorMemList.size>0) {

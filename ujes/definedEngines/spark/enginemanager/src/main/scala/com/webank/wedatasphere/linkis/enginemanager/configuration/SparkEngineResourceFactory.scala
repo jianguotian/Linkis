@@ -29,7 +29,10 @@ import org.springframework.stereotype.Component
 class SparkEngineResourceFactory extends AbstractEngineResourceFactory {
 
   override protected def getRequestResource(properties: java.util.Map[String, String]): DriverAndYarnResource = {
-    val executorNum = DWC_SPARK_EXECUTOR_INSTANCES.getValue(properties)
+    var executorNum = DWC_SPARK_EXECUTOR_INSTANCES.getValue(properties)
+    if (DWC_SPARK_DYNAMIC_ENABLED.getValue(properties)) {
+      executorNum = DWC_SPARK_MIN_EXECUTORS.getValue(properties)
+    }
     new DriverAndYarnResource(
       new LoadInstanceResource(ByteTimeUtils.byteStringAsBytes(DWC_SPARK_DRIVER_MEMORY.getValue(properties) + "G"),
         DWC_SPARK_DRIVER_CORES,
